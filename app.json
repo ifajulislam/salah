@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "Salah",
+    "slug": "salah-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "scheme": "salah",
+    "splash": {
+      "backgroundColor": "#0B4F3F"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.yourorg.salah",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Salah uses your location to calculate accurate prayer times for where you are. You can skip this and enter your city manually instead.",
+        "UIBackgroundModes": ["fetch"]
+      }
+    },
+    "android": {
+      "package": "com.yourorg.salah",
+      "adaptiveIcon": {
+        "backgroundColor": "#0B4F3F"
+      },
+      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"]
+    },
+    "plugins": [
+      "expo-location",
+      [
+        "expo-notifications",
+        {
+          "color": "#0B4F3F"
+        }
+      ]
+    ]
+  }
+}
