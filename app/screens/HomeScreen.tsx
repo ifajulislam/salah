@@ -2,7 +2,7 @@ import { ScrollView, Text, View, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-
+import { SunTimesCard } from "@/features/prayer/components/SunTimesCard";
 import { HeroCard } from "@/features/prayer/components/HeroCard";
 import { useNow } from "@/hooks/useNow";
 import { formatGregorian, formatHijri } from "@/utils/date";
@@ -82,7 +82,6 @@ export function HomeScreen() {
             <PinIcon color={color.ink} size={18} />
           </Pressable>
         </View>
-
         <HeroCard
           current={current}
           next={next}
@@ -92,28 +91,36 @@ export function HomeScreen() {
           sunset={sunset}
           now={now}
         />
-
+        <View className="mt-4">
+          <SunTimesCard
+            sunrise={sunrise}
+            sunset={sunset}
+            use24Hour={use24Hour}
+          />
+        </View>
         <Text className="text-sm font-semibold text-slate-500 mt-6 mb-2">
           Today
         </Text>
+        ˝
+        {today.prayers
+          .filter((p) => p.name !== "sunrise")
+          .map((prayer) => {
+            const rowStatus =
+              prayer.name === current.name
+                ? "active"
+                : prayer.date.getTime() < now.getTime()
+                  ? "passed"
+                  : "upcoming";
 
-        {today.prayers.map((prayer) => {
-          const rowStatus =
-            prayer.name === current.name
-              ? "active"
-              : prayer.date.getTime() < now.getTime()
-                ? "passed"
-                : "upcoming";
-
-          return (
-            <PrayerRow
-              key={prayer.name}
-              prayer={prayer}
-              status={rowStatus}
-              use24Hour={use24Hour}
-            />
-          );
-        })}
+            return (
+              <PrayerRow
+                key={prayer.name}
+                prayer={prayer}
+                status={rowStatus}
+                use24Hour={use24Hour}
+              />
+            );
+          })}
       </ScrollView>
     </SafeAreaView>
   );

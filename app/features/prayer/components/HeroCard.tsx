@@ -33,7 +33,7 @@ export function HeroCard({
     (sunset.getTime() - sunrise.getTime());
 
   return (
-    <View className="overflow-hidden rounded-tl-[44px] rounded-tr-[44px] rounded-br-[28px] rounded-bl-[44px]">
+    <View className="overflow-hidden rounded-tl-[40px] rounded-tr-[36px] rounded-br-[20px] rounded-bl-[36px]">
       <LinearGradient
         colors={skyGradients[skyPeriod]}
         start={{ x: 0.1, y: 0 }}
@@ -55,14 +55,14 @@ export function HeroCard({
           </Text>
         </View>
 
-        <Text className="mt-0.5 text-[15px] text-white/85">
+        <Text className="text-[15px] text-white/85">
           since {formatTime(current.date, use24Hour)}
         </Text>
 
-        <View className="mt-[22px] flex-row items-center gap-3.5">
+        <View className="mt-5 flex-row items-center gap-3.5">
           <CountdownRing
-            size={64}
-            strokeWidth={6}
+            size={40}
+            strokeWidth={7}
             progress={countdown.progress}
           />
           <Text className="text-[15px] font-sans-semibold text-white">
