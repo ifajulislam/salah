@@ -10,7 +10,7 @@ module.exports = function (api) {
         "module-resolver",
         {
           root: ["./"],
-          alias: { "@": "./src" },
+          alias: { "@": "./app" },
         },
       ],
       // Must be listed last
