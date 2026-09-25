@@ -1,11 +1,15 @@
-import { useMemo } from 'react';
-import { computeDayPrayerTimes, getCurrentAndNextPrayer, resolveSkyPeriod } from '@/lib/calculation';
-import { useSettingsStore } from '@/store/useSettingsStore';
-import { useNow } from './useNow';
-import type { DayPrayerTimes, PrayerTime } from '@/types/prayer';
+import { useMemo } from "react";
+import {
+  computeDayPrayerTimes,
+  getCurrentAndNextPrayer,
+  resolveSkyPeriod,
+} from "@/lib/calculation";
+import { useSettingsStore } from "@/store/useSettingsStore";
+import { useNow } from "./useNow";
+import type { DayPrayerTimes, PrayerTime } from "@/types/prayer";
 
 interface UsePrayerTimesResult {
-  status: 'no-location' | 'ready';
+  status: "no-location" | "ready";
   today: DayPrayerTimes | null;
   tomorrow: DayPrayerTimes | null;
   current: PrayerTime | null;
@@ -19,15 +23,6 @@ function startOfDay(d: Date): Date {
   return copy;
 }
 
-/**
- * Single source of truth for "what time is it, prayer-wise, right now".
- *
- * The expensive astronomical calculation (computeDayPrayerTimes) is memoized
- * on the CALENDAR DAY, location, and settings — it does NOT depend on the
- * live clock, so it only reruns when the day actually rolls over. The
- * lightweight "which prayer is current/next" comparison runs every tick via
- * `useNow`, which is cheap (a handful of Date comparisons).
- */
 export function usePrayerTimes(): UsePrayerTimesResult {
   const location = useSettingsStore((s) => s.location);
   const calculationMethod = useSettingsStore((s) => s.calculationMethod);
@@ -36,26 +31,56 @@ export function usePrayerTimes(): UsePrayerTimesResult {
   const now = useNow(1000);
   const dayKey = startOfDay(now).getTime();
 
-  const { today, tomorrow } = useMemo(() => {
-    if (!location) return { today: null, tomorrow: null };
+  const { yesterday, today, tomorrow } = useMemo(() => {
+    if (!location) return { yesterday: null, today: null, tomorrow: null };
 
     const todayDate = new Date(dayKey);
+    const yesterdayDate = new Date(dayKey);
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
     const tomorrowDate = new Date(dayKey);
     tomorrowDate.setDate(tomorrowDate.getDate() + 1);
 
     return {
-      today: computeDayPrayerTimes(location.coordinates, todayDate, calculationMethod, madhab),
-      tomorrow: computeDayPrayerTimes(location.coordinates, tomorrowDate, calculationMethod, madhab),
+      yesterday: computeDayPrayerTimes(
+        location.coordinates,
+        yesterdayDate,
+        calculationMethod,
+        madhab,
+      ),
+      today: computeDayPrayerTimes(
+        location.coordinates,
+        todayDate,
+        calculationMethod,
+        madhab,
+      ),
+      tomorrow: computeDayPrayerTimes(
+        location.coordinates,
+        tomorrowDate,
+        calculationMethod,
+        madhab,
+      ),
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- dayKey (not `now`) is the correct dependency
   }, [location, calculationMethod, madhab, dayKey]);
 
-  if (!location || !today || !tomorrow) {
-    return { status: 'no-location', today: null, tomorrow: null, current: null, next: null, skyPeriod: null };
+  if (!location || !yesterday || !today || !tomorrow) {
+    return {
+      status: "no-location",
+      today: null,
+      tomorrow: null,
+      current: null,
+      next: null,
+      skyPeriod: null,
+    };
   }
 
-  const { current, next } = getCurrentAndNextPrayer(today, tomorrow, now);
+  const { current, next } = getCurrentAndNextPrayer(
+    yesterday,
+    today,
+    tomorrow,
+    now,
+  );
   const skyPeriod = resolveSkyPeriod(today, now);
 
-  return { status: 'ready', today, tomorrow, current, next, skyPeriod };
+  return { status: "ready", today, tomorrow, current, next, skyPeriod };
 }

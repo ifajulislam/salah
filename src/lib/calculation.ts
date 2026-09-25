@@ -4,7 +4,7 @@ import {
   Madhab,
   PrayerTimes as AdhanPrayerTimes,
   SunnahTimes,
-} from 'adhan';
+} from "adhan";
 import type {
   CalcMethodKey,
   Coordinates,
@@ -12,24 +12,31 @@ import type {
   MadhabPreference,
   PrayerName,
   PrayerTime,
-} from '@/types/prayer';
+} from "@/types/prayer";
 
 const LABELS: Record<PrayerName, { en: string; ar: string }> = {
-  fajr: { en: 'Fajr', ar: 'الفجر' },
-  sunrise: { en: 'Sunrise', ar: 'الشروق' },
-  dhuhr: { en: 'Dhuhr', ar: 'الظهر' },
-  asr: { en: 'Asr', ar: 'العصر' },
-  maghrib: { en: 'Maghrib', ar: 'المغرب' },
-  isha: { en: 'Isha', ar: 'العشاء' },
+  fajr: { en: "Fajr", ar: "الفجر" },
+  sunrise: { en: "Sunrise", ar: "الشروق" },
+  dhuhr: { en: "Dhuhr", ar: "الظهر" },
+  asr: { en: "Asr", ar: "العصر" },
+  maghrib: { en: "Maghrib", ar: "المغرب" },
+  isha: { en: "Isha", ar: "العشاء" },
 };
 
 function resolveMethod(key: CalcMethodKey) {
-  const params = (CalculationMethod as Record<string, () => ReturnType<typeof CalculationMethod.Other>>)[key];
+  const params = (
+    CalculationMethod as Record<
+      string,
+      () => ReturnType<typeof CalculationMethod.Other>
+    >
+  )[key];
   return params ? params() : CalculationMethod.MuslimWorldLeague();
 }
 
-function resolveMadhab(pref: MadhabPreference): (typeof Madhab)[keyof typeof Madhab] {
-  return pref === 'hanafi' ? Madhab.Hanafi : Madhab.Shafi;
+function resolveMadhab(
+  pref: MadhabPreference,
+): (typeof Madhab)[keyof typeof Madhab] {
+  return pref === "hanafi" ? Madhab.Hanafi : Madhab.Shafi;
 }
 
 /**
@@ -47,14 +54,24 @@ export function computeDayPrayerTimes(
   methodKey: CalcMethodKey,
   madhabPref: MadhabPreference,
 ): DayPrayerTimes {
-  const adhanCoords = new AdhanCoordinates(coordinates.latitude, coordinates.longitude);
+  const adhanCoords = new AdhanCoordinates(
+    coordinates.latitude,
+    coordinates.longitude,
+  );
   const params = resolveMethod(methodKey);
   params.madhab = resolveMadhab(madhabPref);
 
   const times = new AdhanPrayerTimes(adhanCoords, date, params);
   const sunnah = new SunnahTimes(times);
 
-  const order: PrayerName[] = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
+  const order: PrayerName[] = [
+    "fajr",
+    "sunrise",
+    "dhuhr",
+    "asr",
+    "maghrib",
+    "isha",
+  ];
   const raw: Record<PrayerName, Date> = {
     fajr: times.fajr,
     sunrise: times.sunrise,
@@ -82,42 +99,53 @@ export function computeDayPrayerTimes(
     date,
     prayers,
     prohibited: [
-      { label: 'After sunrise', start: times.sunrise, end: sunriseEnd },
-      { label: 'Solar noon', start: noonWindowStart, end: noonWindowEnd },
-      { label: 'Before sunset', start: sunsetWindowStart, end: times.maghrib },
+      { label: "After sunrise", start: times.sunrise, end: sunriseEnd },
+      { label: "Solar noon", start: noonWindowStart, end: noonWindowEnd },
+      { label: "Before sunset", start: sunsetWindowStart, end: times.maghrib },
     ],
     lastThirdOfNightStart: sunnah.lastThirdOfTheNight,
     nightEnd: times.fajr,
   };
 }
 
-/** Returns the prayer that is currently active/upcoming, and the one after it. */
+/**
+ * Returns the prayer period we're currently inside (the most recent prayer
+ * that has started) and the one that starts next. Built from a merged
+ * timeline spanning yesterday's Isha \u2192 today's five daily prayers \u2192
+ * tomorrow's Fajr, specifically so the overnight hours before today's Fajr
+ * correctly resolve to "currently in Isha" instead of having no current
+ * prayer at all.
+ */
 export function getCurrentAndNextPrayer(
+  yesterday: DayPrayerTimes,
   today: DayPrayerTimes,
   tomorrow: DayPrayerTimes,
   now: Date,
-): { current: PrayerTime | null; next: PrayerTime } {
-  const all = today.prayers.filter((p) => p.name !== 'sunrise');
-  let current: PrayerTime | null = null;
-  let next: PrayerTime | undefined;
+): { current: PrayerTime; next: PrayerTime } {
+  const yesterdayIsha = yesterday.prayers.find((p) => p.name === "isha");
+  const tomorrowFajr = tomorrow.prayers.find((p) => p.name === "fajr");
+  if (!yesterdayIsha || !tomorrowFajr) {
+    throw new Error(
+      "Unable to resolve yesterday\u2019s Isha or tomorrow\u2019s Fajr",
+    );
+  }
 
-  for (let i = 0; i < all.length; i += 1) {
-    const p = all[i];
-    if (p && p.date.getTime() <= now.getTime()) {
+  const timeline: PrayerTime[] = [
+    yesterdayIsha,
+    ...today.prayers.filter((p) => p.name !== "sunrise"),
+    tomorrowFajr,
+  ];
+
+  let current: PrayerTime = yesterdayIsha;
+  let next: PrayerTime = tomorrowFajr;
+
+  for (const p of timeline) {
+    if (p.date.getTime() <= now.getTime()) {
       current = p;
     } else {
       next = p;
       break;
     }
-  }
-
-  if (!next) {
-    // We're past Isha — next prayer is tomorrow's Fajr.
-    const fajrTomorrow = tomorrow.prayers.find((p) => p.name === 'fajr');
-    if (!fajrTomorrow) {
-      throw new Error('Unable to resolve tomorrow\u2019s Fajr time');
-    }
-    next = fajrTomorrow;
   }
 
   return { current, next };
@@ -136,14 +164,14 @@ function getPrayerDate(day: DayPrayerTimes, name: PrayerName): Date {
 export function resolveSkyPeriod(
   today: DayPrayerTimes,
   now: Date,
-): 'fajr' | 'sunrise' | 'dhuhr' | 'asr' | 'maghrib' | 'isha' {
+): "fajr" | "sunrise" | "dhuhr" | "asr" | "maghrib" | "isha" {
   const t = now.getTime();
 
-  if (t < getPrayerDate(today, 'fajr').getTime()) return 'isha';
-  if (t < getPrayerDate(today, 'sunrise').getTime()) return 'fajr';
-  if (t < getPrayerDate(today, 'dhuhr').getTime()) return 'sunrise';
-  if (t < getPrayerDate(today, 'asr').getTime()) return 'dhuhr';
-  if (t < getPrayerDate(today, 'maghrib').getTime()) return 'asr';
-  if (t < getPrayerDate(today, 'isha').getTime()) return 'maghrib';
-  return 'isha';
+  if (t < getPrayerDate(today, "fajr").getTime()) return "isha";
+  if (t < getPrayerDate(today, "sunrise").getTime()) return "fajr";
+  if (t < getPrayerDate(today, "dhuhr").getTime()) return "sunrise";
+  if (t < getPrayerDate(today, "asr").getTime()) return "dhuhr";
+  if (t < getPrayerDate(today, "maghrib").getTime()) return "asr";
+  if (t < getPrayerDate(today, "isha").getTime()) return "maghrib";
+  return "isha";
 }
