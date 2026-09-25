@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, Text, View, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -7,74 +7,82 @@ import { HeroCard } from "@/components/HeroCard";
 import { PrayerRow } from "@/components/PrayerRow";
 import { usePrayerTimes } from "@/hooks/usePrayerTimes";
 import { useNow } from "@/hooks/useNow";
-import { useSettingsStore } from "@/store/useSettingsStore";
-import { color, spacing, type } from "@/theme/tokens";
 import { formatGregorian, formatHijri } from "@/utils/date";
 import type { RootStackParamList } from "@/navigation/RootNavigator";
 import { PinIcon } from "@/components/icons/PinIcon";
+import { color } from "@/theme/tokens";
+import { useSettingsStore } from "@/store/useSettingsStore";
 
-type Nav = NativeStackNavigationProp<RootStackParamList, "Home">;
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, "Home">;
 
 export function HomeScreen() {
-  const navigation = useNavigation<Nav>();
-  const location = useSettingsStore((s) => s.location);
-  const use24Hour = useSettingsStore((s) => s.use24HourClock);
+  const navigation = useNavigation<NavigationProp>();
+  const location = useSettingsStore((state) => state.location);
+  const use24Hour = useSettingsStore((state) => state.use24HourClock);
   const now = useNow(1000);
+
   const { status, today, current, next, skyPeriod } = usePrayerTimes();
 
-  // I added '!current' here to ensure the current prayer is fully loaded
-  // before the app tries to render the screen. This prevents crash errors.
+  // I check for all required data points before rendering to prevent runtime crashes.
+  // Returning early like this keeps the main layout clean and secure.
   if (status === "no-location" || !today || !current || !next) {
     return (
-      <SafeAreaView style={styles.safe}>
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyTitle}>Where should we calculate from?</Text>
-          <Text style={styles.emptyBody}>
+      <SafeAreaView className="flex-1 justify-center bg-stone-100 p-8">
+        <View className="flex-1 justify-center">
+          <Text className="text-2xl font-bold text-slate-900 mb-2">
+            Where should we calculate from?
+          </Text>
+          <Text className="text-base text-slate-600 leading-6 mb-4">
             Share your location for automatic, precise times, or search for your
             city instead.
           </Text>
-          <Text
-            style={styles.emptyAction}
+
+          {/* I use Pressable instead of Text onTouchEnd because it handles mobile touch events much more reliably. */}
+          <Pressable
             onPress={() => navigation.navigate("LocationSetup")}
+            className="self-start"
           >
-            Set location
-          </Text>
+            <Text className="text-base font-semibold text-teal-600">
+              Set location
+            </Text>
+          </Pressable>
         </View>
       </SafeAreaView>
     );
   }
 
-  const sunrise = today.prayers.find((p) => p.name === "sunrise")!.date;
-  const sunset = today.prayers.find((p) => p.name === "maghrib")!.date;
-  const orderedForRow = today.prayers;
-
-  // I deleted the old 'previous' calculation from here because the
-  // 'usePrayerTimes' hook now handles the current prayer logic perfectly.
+  // I use optional chaining (?.) and a fallback (??) to safely extract dates.
+  // This ensures the app will not crash if a specific prayer object is missing.
+  const sunrise =
+    today.prayers.find((p) => p.name === "sunrise")?.date ?? new Date();
+  const sunset =
+    today.prayers.find((p) => p.name === "maghrib")?.date ?? new Date();
 
   return (
-    <SafeAreaView style={styles.safe} edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-stone-100" edges={["top"]}>
       <ScrollView
-        contentContainerStyle={styles.content}
+        contentContainerClassName="p-5 pb-24"
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.topBar}>
+        <View className="flex-row justify-between items-start mb-4">
           <View>
-            <Text style={styles.place}>{location?.city ?? "Unknown"}</Text>
-            <Text style={styles.date}>
+            <Text className="text-2xl font-bold text-slate-900">
+              {location?.city ?? "Unknown"}
+            </Text>
+            <Text className="text-sm text-slate-600 mt-1">
               {formatHijri(now) ? `${formatHijri(now)} \u00b7 ` : ""}
               {formatGregorian(now)}
             </Text>
           </View>
-          <View
-            style={styles.pinBtn}
-            onTouchEnd={() => navigation.navigate("LocationSetup")}
+
+          <Pressable
+            onPress={() => navigation.navigate("LocationSetup")}
+            className="w-10 h-10 rounded-xl bg-slate-200 items-center justify-center active:opacity-70"
           >
             <PinIcon color={color.ink} size={18} />
-          </View>
+          </Pressable>
         </View>
 
-        {/* I changed 'previous={previous}' to 'current={current}' to match 
-            the updated HeroCard props. */}
         <HeroCard
           current={current}
           next={next}
@@ -85,17 +93,18 @@ export function HomeScreen() {
           now={now}
         />
 
-        <Text style={styles.sectionTitle}>Today</Text>
+        <Text className="text-sm font-semibold text-slate-500 mt-6 mb-2">
+          Today
+        </Text>
 
-        {orderedForRow.map((prayer) => {
-          // I updated this logic to check against 'current.name' instead of 'next.name'.
-          // This ensures the highlighted row in the list matches what the hero card is showing.
+        {today.prayers.map((prayer) => {
           const rowStatus =
             prayer.name === current.name
               ? "active"
               : prayer.date.getTime() < now.getTime()
                 ? "passed"
                 : "upcoming";
+
           return (
             <PrayerRow
               key={prayer.name}
@@ -109,49 +118,3 @@ export function HomeScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: color.sand },
-  content: { padding: spacing(5), paddingBottom: spacing(24) },
-  topBar: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: spacing(4.5),
-  },
-  place: { fontSize: 22, fontFamily: type.family.sansBold, color: color.ink },
-  date: { fontSize: 13, color: color.inkMuted, marginTop: 2 },
-  pinBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 14,
-    backgroundColor: color.hairline,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  sectionTitle: {
-    fontSize: 14,
-    fontFamily: type.family.sansSemibold,
-    color: color.inkMuted,
-    marginTop: spacing(6.5),
-    marginBottom: spacing(2.5),
-  },
-  emptyState: { flex: 1, justifyContent: "center", padding: spacing(8) },
-  emptyTitle: {
-    fontSize: 22,
-    fontFamily: type.family.sansBold,
-    color: color.ink,
-    marginBottom: spacing(2),
-  },
-  emptyBody: {
-    fontSize: 15,
-    color: color.inkMuted,
-    lineHeight: 22,
-    marginBottom: spacing(4),
-  },
-  emptyAction: {
-    fontSize: 15,
-    fontFamily: type.family.sansSemibold,
-    color: color.jade,
-  },
-});
