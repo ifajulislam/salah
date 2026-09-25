@@ -12,6 +12,7 @@ import type {
   MadhabPreference,
   PrayerName,
   PrayerTime,
+  ProhibitedWindow,
 } from "@/features/prayer/types/prayer";
 
 const LABELS: Record<PrayerName, { en: string; ar: string }> = {
@@ -174,4 +175,17 @@ export function resolveSkyPeriod(
   if (t < getPrayerDate(today, "maghrib").getTime()) return "asr";
   if (t < getPrayerDate(today, "isha").getTime()) return "maghrib";
   return "isha";
+}
+
+/** Returns the prohibited window `now` currently falls inside, or null if none. */
+export function getActiveProhibitedWindow(
+  today: DayPrayerTimes,
+  now: Date,
+): ProhibitedWindow | null {
+  const t = now.getTime();
+  return (
+    today.prohibited.find(
+      (w) => t >= w.start.getTime() && t < w.end.getTime(),
+    ) ?? null
+  );
 }

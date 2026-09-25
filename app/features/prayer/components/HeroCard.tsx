@@ -1,8 +1,12 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { StyleSheet } from "react-native";
 import { CountdownRing } from "../../../components/CountdownRing";
-import { skyGradients, SkyPeriod } from "@/theme/tokens";
-import type { PrayerTime } from "@/features/prayer/types/prayer";
+import { skyGradients, prohibitedGradient, SkyPeriod } from "@/theme/tokens";
+import type {
+  PrayerTime,
+  ProhibitedWindow,
+} from "@/features/prayer/types/prayer";
 import { useCountdown } from "@/hooks/useCountdown";
 import { formatTime } from "@/utils/date";
 import { SunArc } from "./SunArc";
@@ -11,6 +15,7 @@ interface Props {
   current: PrayerTime;
   next: PrayerTime;
   skyPeriod: SkyPeriod;
+  prohibited: ProhibitedWindow | null;
   use24Hour: boolean;
   sunrise: Date;
   sunset: Date;
@@ -21,6 +26,7 @@ export function HeroCard({
   current,
   next,
   skyPeriod,
+  prohibited,
   use24Hour,
   sunrise,
   sunset,
@@ -32,18 +38,22 @@ export function HeroCard({
     (now.getTime() - sunrise.getTime()) /
     (sunset.getTime() - sunrise.getTime());
 
+  const gradient = prohibited ? prohibitedGradient : skyGradients[skyPeriod];
+
   return (
-    <View className="overflow-hidden rounded-tl-[40px] rounded-tr-[36px] rounded-br-[20px] rounded-bl-[36px]">
+    <View className="overflow-hidden rounded-tl-[44px] rounded-tr-[44px] rounded-br-[28px] rounded-bl-[44px]">
       <LinearGradient
-        colors={skyGradients[skyPeriod]}
+        colors={gradient}
         start={{ x: 0.1, y: 0 }}
         end={{ x: 0.9, y: 1 }}
         style={StyleSheet.absoluteFill}
       />
 
-      <View className="pt-6 px-6">
+      <View className="p-6">
         <Text className="text-[13px] font-sans-semibold text-white/75">
-          Current prayer
+          {prohibited
+            ? `Prohibited \u00b7 ${prohibited.label}`
+            : "Current prayer"}
         </Text>
 
         <View className="mt-1 flex-row items-baseline gap-2.5">
@@ -55,14 +65,14 @@ export function HeroCard({
           </Text>
         </View>
 
-        <Text className="text-[15px] text-white/85">
+        <Text className="mt-0.5 text-[15px] text-white/85">
           since {formatTime(current.date, use24Hour)}
         </Text>
 
-        <View className="mt-5 flex-row items-center gap-3.5">
+        <View className="mt-[22px] flex-row items-center gap-3.5">
           <CountdownRing
-            size={40}
-            strokeWidth={7}
+            size={64}
+            strokeWidth={6}
             progress={countdown.progress}
           />
           <Text className="text-[15px] font-sans-semibold text-white">

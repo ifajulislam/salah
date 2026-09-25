@@ -5,15 +5,15 @@
  */
 
 export const color = {
-  jade: '#0B4F3F',
-  jadeLight: '#E1F5EE',
-  sand: '#F7F2E9',
-  surface: '#FFFFFF',
-  ink: '#1B1B1B',
-  inkMuted: '#8A8577',
-  hairline: '#EAE3D3',
-  amber: '#F2B15A',
-  danger: '#C24444',
+  jade: "#0B4F3F",
+  jadeLight: "#E1F5EE",
+  sand: "#F7F2E9",
+  surface: "#FFFFFF",
+  ink: "#1B1B1B",
+  inkMuted: "#8A8577",
+  hairline: "#EAE3D3",
+  amber: "#F2B15A",
+  danger: "#C24444",
 } as const;
 
 /**
@@ -21,13 +21,16 @@ export const color = {
  * off this so the whole app breathes with the sun instead of staying static.
  */
 export const skyGradients = {
-  fajr: ['#1B1B3A', '#4A3A66', '#F2A6A1'] as const,
-  sunrise: ['#4A3A66', '#E8734A', '#F2B15A'] as const,
-  dhuhr: ['#1E6FB8', '#4C8DFF', '#8FC7F2'] as const,
-  asr: ['#3C6E9E', '#7CA9C9', '#E8A33D'] as const,
-  maghrib: ['#2B1E4A', '#7A3B63', '#E8734A', '#F2B15A'] as const,
-  isha: ['#0E0E24', '#1B1B3A', '#3A2E5C'] as const,
+  fajr: ["#1B1B3A", "#4A3A66", "#F2A6A1"] as const,
+  sunrise: ["#4A3A66", "#E8734A", "#F2B15A"] as const,
+  dhuhr: ["#1E6FB8", "#4C8DFF", "#8FC7F2"] as const,
+  asr: ["#3C6E9E", "#7CA9C9", "#E8A33D"] as const,
+  maghrib: ["#2B1E4A", "#7A3B63", "#E8734A", "#F2B15A"] as const,
+  isha: ["#0E0E24", "#1B1B3A", "#3A2E5C"] as const,
 } as const;
+
+/** Overrides skyGradients on the hero when `now` falls inside a prohibited window. */
+export const prohibitedGradient = ["#3D1414", "#7A2320", "#C24444"] as const;
 
 export type SkyPeriod = keyof typeof skyGradients;
 
@@ -43,10 +46,10 @@ export const radius = {
 
 export const type = {
   family: {
-    sans: 'PlusJakartaSans_500Medium',
-    sansBold: 'PlusJakartaSans_800ExtraBold',
-    sansSemibold: 'PlusJakartaSans_600SemiBold',
-    arabic: 'NotoNaskhArabic_700Bold',
+    sans: "PlusJakartaSans_500Medium",
+    sansBold: "PlusJakartaSans_800ExtraBold",
+    sansSemibold: "PlusJakartaSans_600SemiBold",
+    arabic: "NotoNaskhArabic_700Bold",
   },
   scale: {
     display: 34,

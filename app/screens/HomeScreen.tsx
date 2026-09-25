@@ -12,6 +12,8 @@ import { useSettingsStore } from "@/features/settings/store/useSettingsStore";
 import { PinIcon } from "@/features/prayer/components/icons/PinIcon";
 import { PrayerRow } from "@/features/prayer/components/PrayerRow";
 import { usePrayerTimes } from "@/features/prayer/hooks/usePrayerTimes";
+import { ProhibitedTimesCard } from "@/features/prayer/components/ProhibitedTimesCard";
+import { getActiveProhibitedWindow } from "@/features/prayer/lib/calculation";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "Home">;
 
@@ -51,12 +53,11 @@ export function HomeScreen() {
     );
   }
 
-  // I use optional chaining (?.) and a fallback (??) to safely extract dates.
-  // This ensures the app will not crash if a specific prayer object is missing.
   const sunrise =
     today.prayers.find((p) => p.name === "sunrise")?.date ?? new Date();
   const sunset =
     today.prayers.find((p) => p.name === "maghrib")?.date ?? new Date();
+  const activeProhibited = getActiveProhibitedWindow(today, now);
 
   return (
     <SafeAreaView className="flex-1 bg-stone-100" edges={["top"]}>
@@ -82,15 +83,18 @@ export function HomeScreen() {
             <PinIcon color={color.ink} size={18} />
           </Pressable>
         </View>
+
         <HeroCard
           current={current}
           next={next}
           skyPeriod={skyPeriod ?? "dhuhr"}
+          prohibited={activeProhibited}
           use24Hour={use24Hour}
           sunrise={sunrise}
           sunset={sunset}
           now={now}
         />
+
         <View className="mt-4">
           <SunTimesCard
             sunrise={sunrise}
@@ -98,10 +102,20 @@ export function HomeScreen() {
             use24Hour={use24Hour}
           />
         </View>
+
+        <Text className="text-sm font-semibold text-slate-500 mt-6 mb-2">
+          Prohibited times
+        </Text>
+        <ProhibitedTimesCard
+          windows={today.prohibited}
+          activeWindow={activeProhibited}
+          use24Hour={use24Hour}
+        />
+
         <Text className="text-sm font-semibold text-slate-500 mt-6 mb-2">
           Today
         </Text>
-        ˝
+
         {today.prayers
           .filter((p) => p.name !== "sunrise")
           .map((prayer) => {
