@@ -14,18 +14,16 @@ export function PrayerRow({ prayer, status, use24Hour }: Props) {
 
   return (
     <View
-      className={
+      className={`flex-row items-center gap-3.5 px-3.5 pr-4 mb-2.5 py-2 ${
         isActive
-          ? "flex-row items-center gap-3.5 p-3.5 mb-2 bg-jade rounded-tl-[26px] rounded-tr-[26px] rounded-br-[12px] rounded-bl-[26px]"
-          : "flex-row items-center gap-3.5 p-3.5 mb-2 bg-surface rounded-[22px]"
-      }
+          ? "bg-jade rounded-tl-[26px] rounded-tr-[26px] rounded-br-[12px] rounded-bl-[26px]"
+          : "bg-surface rounded-[22px]"
+      }`}
     >
       <View
-        className={
-          isActive
-            ? "w-[38px] h-[38px] rounded-xl items-center justify-center bg-white/[0.18]"
-            : "w-[38px] h-[38px] rounded-xl items-center justify-center bg-jade-light"
-        }
+        className={`size-11 rounded-2xl items-center justify-center ${
+          isActive ? "bg-white/[0.18]" : "bg-jade-light"
+        }`}
       >
         <PrayerIcon name={prayer.name} color={isActive ? "#fff" : "#0B4F3F"} />
       </View>
@@ -36,7 +34,7 @@ export function PrayerRow({ prayer, status, use24Hour }: Props) {
           {prayer.label}
         </Text>
         <Text
-          className={`text-[13px] font-arabic mt-px ${isActive ? "text-white/70" : "text-ink-muted"}`}
+          className={`text-[13px] -mt-1 font-arabic ${isActive ? "text-white/70" : "text-ink-muted"}`}
         >
           {prayer.labelArabic}
         </Text>
