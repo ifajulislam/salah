@@ -1,13 +1,16 @@
-import { create } from 'zustand';
-import { getJSON, setJSON } from '@/lib/storage';
-import type { AppSettings, LocationSource } from '@/types/prayer';
+import { create } from "zustand";
+import { getJSON, setJSON } from "@/lib/storage";
+import type {
+  AppSettings,
+  LocationSource,
+} from "@/features/prayer/types/prayer";
 
-const STORAGE_KEY = 'settings.v1';
+const STORAGE_KEY = "settings.v1";
 
 const DEFAULT_SETTINGS: AppSettings = {
   location: null,
-  calculationMethod: 'MuslimWorldLeague',
-  madhab: 'shafi',
+  calculationMethod: "MuslimWorldLeague",
+  madhab: "shafi",
   use24HourClock: false,
   notificationsEnabled: false,
 };
@@ -17,8 +20,8 @@ interface SettingsStore extends AppSettings {
   hydrated: boolean;
   hydrate: () => Promise<void>;
   setLocation: (location: LocationSource) => void;
-  setCalculationMethod: (method: AppSettings['calculationMethod']) => void;
-  setMadhab: (madhab: AppSettings['madhab']) => void;
+  setCalculationMethod: (method: AppSettings["calculationMethod"]) => void;
+  setMadhab: (madhab: AppSettings["madhab"]) => void;
   setUse24HourClock: (value: boolean) => void;
   setNotificationsEnabled: (value: boolean) => void;
 }
@@ -26,7 +29,7 @@ interface SettingsStore extends AppSettings {
 function persist(state: AppSettings) {
   // Fire-and-forget: settings writes are small and non-critical to await.
   setJSON(STORAGE_KEY, state).catch((err) => {
-    console.warn('Failed to persist settings', err);
+    console.warn("Failed to persist settings", err);
   });
 }
 

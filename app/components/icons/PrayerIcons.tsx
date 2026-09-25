@@ -1,6 +1,6 @@
 import React from "react";
 import Svg, { Circle, Path } from "react-native-svg";
-import type { PrayerName } from "@/types/prayer";
+import type { PrayerName } from "@/features/prayer/types/prayer";
 
 interface Props {
   name: PrayerName;

@@ -1,7 +1,7 @@
 import { Text, View } from "react-native";
-import type { PrayerTime } from "@/types/prayer";
+import type { PrayerTime } from "@/features/prayer/types/prayer";
 import { formatTime } from "@/utils/date";
-import { PrayerIcon } from "./icons/PrayerIcons";
+import { PrayerIcon } from "@/components/icons/PrayerIcons";
 
 interface Props {
   prayer: PrayerTime;

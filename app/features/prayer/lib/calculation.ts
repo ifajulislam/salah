@@ -12,7 +12,7 @@ import type {
   MadhabPreference,
   PrayerName,
   PrayerTime,
-} from "@/types/prayer";
+} from "@/features/prayer/types/prayer";
 
 const LABELS: Record<PrayerName, { en: string; ar: string }> = {
   fajr: { en: "Fajr", ar: "الفجر" },

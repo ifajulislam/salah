@@ -3,15 +3,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
-import { HeroCard } from "@/components/HeroCard";
-import { PrayerRow } from "@/components/PrayerRow";
-import { usePrayerTimes } from "@/hooks/usePrayerTimes";
+import { HeroCard } from "@/features/prayer/components/HeroCard";
 import { useNow } from "@/hooks/useNow";
 import { formatGregorian, formatHijri } from "@/utils/date";
 import type { RootStackParamList } from "@/navigation/RootNavigator";
-import { PinIcon } from "@/components/icons/PinIcon";
 import { color } from "@/theme/tokens";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { PinIcon } from "@/features/prayer/components/icons/PinIcon";
+import { PrayerRow } from "@/features/prayer/components/PrayerRow";
+import { usePrayerTimes } from "@/features/prayer/hooks/usePrayerTimes";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "Home">;
 

@@ -1,10 +1,13 @@
-import * as Location from 'expo-location';
-import type { Coordinates, LocationSource } from '@/types/prayer';
+import * as Location from "expo-location";
+import type {
+  Coordinates,
+  LocationSource,
+} from "@/features/prayer/types/prayer";
 
 export class LocationPermissionDeniedError extends Error {
   constructor() {
-    super('Location permission was denied');
-    this.name = 'LocationPermissionDeniedError';
+    super("Location permission was denied");
+    this.name = "LocationPermissionDeniedError";
   }
 }
 
@@ -15,7 +18,7 @@ export class LocationPermissionDeniedError extends Error {
  */
 export async function requestGpsLocation(): Promise<LocationSource> {
   const { status } = await Location.requestForegroundPermissionsAsync();
-  if (status !== 'granted') {
+  if (status !== "granted") {
     throw new LocationPermissionDeniedError();
   }
 
@@ -28,11 +31,13 @@ export async function requestGpsLocation(): Promise<LocationSource> {
     longitude: position.coords.longitude,
   };
 
-  const [place] = await Location.reverseGeocodeAsync(coordinates).catch(() => []);
+  const [place] = await Location.reverseGeocodeAsync(coordinates).catch(
+    () => [],
+  );
 
   return {
-    type: 'gps',
-    city: place?.city ?? place?.subregion ?? 'Current location',
+    type: "gps",
+    city: place?.city ?? place?.subregion ?? "Current location",
     country: place?.country ?? undefined,
     coordinates,
     timezone: undefined, // resolved on demand via Intl at render time
@@ -54,11 +59,11 @@ export interface CitySearchResult {
 export async function searchCities(query: string): Promise<CitySearchResult[]> {
   if (query.trim().length < 2) return [];
 
-  const url = new URL('https://geocoding-api.open-meteo.com/v1/search');
-  url.searchParams.set('name', query.trim());
-  url.searchParams.set('count', '8');
-  url.searchParams.set('language', 'en');
-  url.searchParams.set('format', 'json');
+  const url = new URL("https://geocoding-api.open-meteo.com/v1/search");
+  url.searchParams.set("name", query.trim());
+  url.searchParams.set("count", "8");
+  url.searchParams.set("language", "en");
+  url.searchParams.set("format", "json");
 
   const response = await fetch(url.toString());
   if (!response.ok) {
@@ -85,7 +90,7 @@ export async function searchCities(query: string): Promise<CitySearchResult[]> {
 
 export function toLocationSource(result: CitySearchResult): LocationSource {
   return {
-    type: 'manual',
+    type: "manual",
     city: result.name,
     country: result.country,
     coordinates: result.coordinates,

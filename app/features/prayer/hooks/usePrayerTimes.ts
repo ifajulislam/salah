@@ -1,12 +1,15 @@
 import { useMemo } from "react";
+import { useSettingsStore } from "@/store/useSettingsStore";
+import type {
+  DayPrayerTimes,
+  PrayerTime,
+} from "@/features/prayer/types/prayer";
+import { useNow } from "@/hooks/useNow";
 import {
   computeDayPrayerTimes,
   getCurrentAndNextPrayer,
   resolveSkyPeriod,
-} from "@/lib/calculation";
-import { useSettingsStore } from "@/store/useSettingsStore";
-import { useNow } from "./useNow";
-import type { DayPrayerTimes, PrayerTime } from "@/types/prayer";
+} from "../lib/calculation";
 
 interface UsePrayerTimesResult {
   status: "no-location" | "ready";

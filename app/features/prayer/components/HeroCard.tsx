@@ -1,17 +1,11 @@
 import { StyleSheet, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { CountdownRing } from "./CountdownRing";
-import { SunArc } from "./SunArc";
-import {
-  radius,
-  skyGradients,
-  spacing,
-  type,
-  SkyPeriod,
-} from "@/theme/tokens";
-import type { PrayerTime } from "@/types/prayer";
+import { CountdownRing } from "../../../components/CountdownRing";
+import { radius, skyGradients, spacing, type, SkyPeriod } from "@/theme/tokens";
+import type { PrayerTime } from "@/features/prayer/types/prayer";
 import { useCountdown } from "@/hooks/useCountdown";
 import { formatTime } from "@/utils/date";
+import { SunArc } from "./SunArc";
 
 interface Props {
   current: PrayerTime;
