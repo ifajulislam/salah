@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useSettingsStore } from "@/store/useSettingsStore";
+import { useSettingsStore } from "@/features/settings/store/useSettingsStore";
 import type {
   DayPrayerTimes,
   PrayerTime,

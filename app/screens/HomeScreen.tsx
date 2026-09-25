@@ -8,7 +8,7 @@ import { useNow } from "@/hooks/useNow";
 import { formatGregorian, formatHijri } from "@/utils/date";
 import type { RootStackParamList } from "@/navigation/RootNavigator";
 import { color } from "@/theme/tokens";
-import { useSettingsStore } from "@/store/useSettingsStore";
+import { useSettingsStore } from "@/features/settings/store/useSettingsStore";
 import { PinIcon } from "@/features/prayer/components/icons/PinIcon";
 import { PrayerRow } from "@/features/prayer/components/PrayerRow";
 import { usePrayerTimes } from "@/features/prayer/hooks/usePrayerTimes";

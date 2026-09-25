@@ -1,4 +1,4 @@
-import "./global.css"
+import "./global.css";
 import React from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -16,7 +16,7 @@ import {
 import * as SplashScreen from "expo-splash-screen";
 
 import { RootNavigator } from "@/navigation/RootNavigator";
-import { useSettingsStore } from "@/store/useSettingsStore";
+import { useSettingsStore } from "@/features/settings/store/useSettingsStore";
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   // No-op: if this fails the splash just hides on its own, which is fine.

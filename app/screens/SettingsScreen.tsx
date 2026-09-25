@@ -7,7 +7,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useSettingsStore } from "@/store/useSettingsStore";
+import { useSettingsStore } from "@/features/settings/store/useSettingsStore";
 import { color, radius, spacing, type } from "@/theme/tokens";
 import type {
   CalcMethodKey,

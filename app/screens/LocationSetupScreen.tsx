@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -7,17 +7,23 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
-import { requestGpsLocation, searchCities, toLocationSource, LocationPermissionDeniedError, type CitySearchResult } from '@/lib/location';
-import { useSettingsStore } from '@/store/useSettingsStore';
-import { color, radius, spacing, type } from '@/theme/tokens';
-import type { RootStackParamList } from '@/navigation/RootNavigator';
+import {
+  requestGpsLocation,
+  searchCities,
+  toLocationSource,
+  LocationPermissionDeniedError,
+  type CitySearchResult,
+} from "@/lib/location";
+import { useSettingsStore } from "@/features/settings/store/useSettingsStore";
+import { color, radius, spacing, type } from "@/theme/tokens";
+import type { RootStackParamList } from "@/navigation/RootNavigator";
 
-type Nav = NativeStackNavigationProp<RootStackParamList, 'LocationSetup'>;
+type Nav = NativeStackNavigationProp<RootStackParamList, "LocationSetup">;
 
 export function LocationSetupScreen() {
   const navigation = useNavigation<Nav>();
@@ -25,7 +31,7 @@ export function LocationSetupScreen() {
 
   const [gpsLoading, setGpsLoading] = useState(false);
   const [gpsError, setGpsError] = useState<string | null>(null);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [results, setResults] = useState<CitySearchResult[]>([]);
   const [searching, setSearching] = useState(false);
 
@@ -38,9 +44,13 @@ export function LocationSetupScreen() {
       navigation.goBack();
     } catch (err) {
       if (err instanceof LocationPermissionDeniedError) {
-        setGpsError('Location permission was denied. You can search for your city below instead.');
+        setGpsError(
+          "Location permission was denied. You can search for your city below instead.",
+        );
       } else {
-        setGpsError('Couldn\u2019t get your location right now. Try searching for your city instead.');
+        setGpsError(
+          "Couldn\u2019t get your location right now. Try searching for your city instead.",
+        );
       }
     } finally {
       setGpsLoading(false);
@@ -77,10 +87,15 @@ export function LocationSetupScreen() {
       <View style={styles.content}>
         <Text style={styles.title}>Set your location</Text>
         <Text style={styles.subtitle}>
-          Used only to calculate accurate prayer times. Location access is entirely optional.
+          Used only to calculate accurate prayer times. Location access is
+          entirely optional.
         </Text>
 
-        <TouchableOpacity style={styles.gpsButton} onPress={handleUseGps} disabled={gpsLoading}>
+        <TouchableOpacity
+          style={styles.gpsButton}
+          onPress={handleUseGps}
+          disabled={gpsLoading}
+        >
           {gpsLoading ? (
             <ActivityIndicator color="#fff" />
           ) : (
@@ -100,17 +115,27 @@ export function LocationSetupScreen() {
           autoCorrect={false}
         />
 
-        {searching ? <ActivityIndicator style={{ marginTop: spacing(3) }} color={color.jade} /> : null}
+        {searching ? (
+          <ActivityIndicator
+            style={{ marginTop: spacing(3) }}
+            color={color.jade}
+          />
+        ) : null}
 
         <FlatList
           data={results}
-          keyExtractor={(item, index) => `${item.name}-${item.country}-${index}`}
+          keyExtractor={(item, index) =>
+            `${item.name}-${item.country}-${index}`
+          }
           contentContainerStyle={{ paddingTop: spacing(2) }}
           renderItem={({ item }) => (
-            <TouchableOpacity style={styles.resultRow} onPress={() => handlePickCity(item)}>
+            <TouchableOpacity
+              style={styles.resultRow}
+              onPress={() => handlePickCity(item)}
+            >
               <Text style={styles.resultName}>{item.name}</Text>
               <Text style={styles.resultMeta}>
-                {[item.admin1, item.country].filter(Boolean).join(', ')}
+                {[item.admin1, item.country].filter(Boolean).join(", ")}
               </Text>
             </TouchableOpacity>
           )}
@@ -124,18 +149,27 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: color.sand },
   content: { flex: 1, padding: spacing(5) },
   title: { fontSize: 24, fontFamily: type.family.sansBold, color: color.ink },
-  subtitle: { fontSize: 14, color: color.inkMuted, marginTop: spacing(1.5), lineHeight: 20 },
+  subtitle: {
+    fontSize: 14,
+    color: color.inkMuted,
+    marginTop: spacing(1.5),
+    lineHeight: 20,
+  },
   gpsButton: {
     backgroundColor: color.jade,
     borderRadius: radius.md,
     paddingVertical: spacing(4),
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: spacing(6),
   },
-  gpsButtonLabel: { color: '#fff', fontFamily: type.family.sansSemibold, fontSize: 15 },
+  gpsButtonLabel: {
+    color: "#fff",
+    fontFamily: type.family.sansSemibold,
+    fontSize: 15,
+  },
   error: { color: color.danger, fontSize: 13, marginTop: spacing(2) },
   orLabel: {
-    textAlign: 'center',
+    textAlign: "center",
     color: color.inkMuted,
     fontSize: 13,
     marginTop: spacing(5),
@@ -154,6 +188,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: color.hairline,
   },
-  resultName: { fontSize: 15, fontFamily: type.family.sansSemibold, color: color.ink },
+  resultName: {
+    fontSize: 15,
+    fontFamily: type.family.sansSemibold,
+    color: color.ink,
+  },
   resultMeta: { fontSize: 12, color: color.inkMuted, marginTop: 2 },
 });
