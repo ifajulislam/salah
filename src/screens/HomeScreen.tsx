@@ -1,4 +1,3 @@
-import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -93,7 +92,6 @@ export function HomeScreen() {
               prayer={prayer}
               status={status2}
               use24Hour={use24Hour}
-              icon={<View style={styles.iconDot} />}
             />
           );
         })}

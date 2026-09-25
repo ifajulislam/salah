@@ -1,18 +1,22 @@
-import React from 'react';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { StatusBar } from 'expo-status-bar';
+import "./global.css"
+import React from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
 import {
   useFonts as usePlusJakarta,
   PlusJakartaSans_500Medium,
   PlusJakartaSans_600SemiBold,
   PlusJakartaSans_800ExtraBold,
-} from '@expo-google-fonts/plus-jakarta-sans';
-import { useFonts as useNotoNaskh, NotoNaskhArabic_700Bold } from '@expo-google-fonts/noto-naskh-arabic';
-import * as SplashScreen from 'expo-splash-screen';
+} from "@expo-google-fonts/plus-jakarta-sans";
+import {
+  useFonts as useNotoNaskh,
+  NotoNaskhArabic_700Bold,
+} from "@expo-google-fonts/noto-naskh-arabic";
+import * as SplashScreen from "expo-splash-screen";
 
-import { RootNavigator } from '@/navigation/RootNavigator';
-import { useSettingsStore } from '@/store/useSettingsStore';
+import { RootNavigator } from "@/navigation/RootNavigator";
+import { useSettingsStore } from "@/store/useSettingsStore";
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   // No-op: if this fails the splash just hides on its own, which is fine.

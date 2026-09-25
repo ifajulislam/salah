@@ -9,13 +9,17 @@
     "splash": {
       "backgroundColor": "#0B4F3F"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.yourorg.salah",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Salah uses your location to calculate accurate prayer times for where you are. You can skip this and enter your city manually instead.",
-        "UIBackgroundModes": ["fetch"]
+        "UIBackgroundModes": [
+          "fetch"
+        ]
       }
     },
     "android": {
@@ -23,7 +27,10 @@
       "adaptiveIcon": {
         "backgroundColor": "#0B4F3F"
       },
-      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"]
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ]
     },
     "plugins": [
       "expo-location",
@@ -32,7 +39,9 @@
         {
           "color": "#0B4F3F"
         }
-      ]
+      ],
+      "expo-font",
+      "expo-splash-screen"
     ]
   }
 }

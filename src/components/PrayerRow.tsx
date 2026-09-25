@@ -1,6 +1,4 @@
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { color, radius, spacing, type } from "@/theme/tokens";
+import { Text, View } from "react-native";
 import type { PrayerTime } from "@/types/prayer";
 import { formatTime } from "@/utils/date";
 import { PrayerIcon } from "./icons/PrayerIcons";
@@ -15,23 +13,44 @@ export function PrayerRow({ prayer, status, use24Hour }: Props) {
   const isActive = status === "active";
 
   return (
-    <View style={[styles.row, isActive && styles.rowActive]}>
-      <View style={[styles.iconWrap, isActive && styles.iconWrapActive]}>
-        <PrayerIcon name={prayer.name} color={isActive ? "#fff" : color.jade} />
+    <View
+      className={
+        isActive
+          ? "flex-row items-center gap-3.5 p-3.5 mb-2 bg-jade rounded-tl-[26px] rounded-tr-[26px] rounded-br-[12px] rounded-bl-[26px]"
+          : "flex-row items-center gap-3.5 p-3.5 mb-2 bg-surface rounded-[22px]"
+      }
+    >
+      <View
+        className={
+          isActive
+            ? "w-[38px] h-[38px] rounded-xl items-center justify-center bg-white/[0.18]"
+            : "w-[38px] h-[38px] rounded-xl items-center justify-center bg-jade-light"
+        }
+      >
+        <PrayerIcon name={prayer.name} color={isActive ? "#fff" : "#0B4F3F"} />
       </View>
-      <View style={styles.names}>
-        <Text style={[styles.en, isActive && styles.textOnActive]}>
+      <View className="flex-1">
+        <Text
+          className={`text-[15px] font-sans-semibold ${isActive ? "text-white" : "text-ink"}`}
+        >
           {prayer.label}
         </Text>
-        <Text style={[styles.ar, isActive && styles.arOnActive]}>
+        <Text
+          className={`text-[13px] font-arabic mt-px ${isActive ? "text-white/70" : "text-ink-muted"}`}
+        >
           {prayer.labelArabic}
         </Text>
       </View>
-      <View style={styles.timeCol}>
-        <Text style={[styles.time, isActive && styles.textOnActive]}>
+      <View className="items-end">
+        <Text
+          className={`text-base font-sans-bold ${isActive ? "text-white" : "text-ink"}`}
+          style={{ fontVariant: ["tabular-nums"] }}
+        >
           {formatTime(prayer.date, use24Hour)}
         </Text>
-        <Text style={[styles.sub, isActive && styles.subOnActive]}>
+        <Text
+          className={`text-[11px] mt-0.5 ${isActive ? "text-white/65" : "text-[#B7B2A3]"}`}
+        >
           {status === "passed"
             ? "passed"
             : status === "active"
@@ -42,60 +61,3 @@ export function PrayerRow({ prayer, status, use24Hour }: Props) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing(3.5),
-    padding: spacing(3.5),
-    marginBottom: spacing(2),
-    backgroundColor: color.surface,
-    borderRadius: radius.md,
-  },
-  rowActive: {
-    backgroundColor: color.jade,
-    borderTopLeftRadius: radius.activeRowCorners[0],
-    borderTopRightRadius: radius.activeRowCorners[1],
-    borderBottomRightRadius: radius.activeRowCorners[2],
-    borderBottomLeftRadius: radius.activeRowCorners[3],
-  },
-  iconWrap: {
-    width: 38,
-    height: 38,
-    borderRadius: 12,
-    backgroundColor: color.jadeLight,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  iconWrapActive: {
-    backgroundColor: "rgba(255,255,255,0.18)",
-  },
-  names: { flex: 1 },
-  en: {
-    fontSize: 15,
-    fontFamily: type.family.sansSemibold,
-    color: color.ink,
-  },
-  ar: {
-    fontSize: 13,
-    fontFamily: type.family.arabic,
-    color: color.inkMuted,
-    marginTop: 1,
-  },
-  timeCol: { alignItems: "flex-end" },
-  time: {
-    fontSize: 16,
-    fontFamily: type.family.sansBold,
-    color: color.ink,
-    fontVariant: ["tabular-nums"],
-  },
-  sub: {
-    fontSize: 11,
-    color: "#B7B2A3",
-    marginTop: 2,
-  },
-  textOnActive: { color: "#fff" },
-  arOnActive: { color: "rgba(255,255,255,0.7)" },
-  subOnActive: { color: "rgba(255,255,255,0.65)" },
-});
